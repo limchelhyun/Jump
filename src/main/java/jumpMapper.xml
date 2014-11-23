@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jumpMapper">
+    <!-- resultMap jump -->
+	<resultMap id="jump" type="project.jump.dto.Jump">
+    	<result property="jumpId" column="jump_id"/>
+    	<result property="jumpPwd" column="jump_pwd"/>
+    	<result property="jumpName" column="jump_name"/>
+    	<!-- <collection property="comments" 
+    	column="BOARDID"
+    	 javaType="java.util.ArrayList" 
+    	 ofType="net.krespo.mybatis.Comment" 
+    	 select="getCommentListById"/> -->
+ 	</resultMap>
+ 	
+ 	<!-- select jump -->
+	<select id="selectMember"  resultMap="jump">
+  	select * from jump
+ 	</select> 
+ 	
+ 	<!-- select pwdCheck -->
+ 	<select id="pwdCheck" parameterType="String" resultMap="jump">
+ 		select jump_pwd from jump where jump_id= #{jumpId}
+ 	</select>
+ 	
+ 	<!-- resultMap jumpBoard -->
+ 	<resultMap id="jumpBoard" type="project.jump.dto.JumpBoard">
+ 		<result property="jumpId" column="jump_id"/>
+    	<result property="boardNum" column="board_num"/>
+    	<result property="boardDate" column="board_date"/>
+    	<result property="boardTitle" column="board_title"/>
+    	<result property="boardArea" column="board_area"/>
+    	<result property="boardContent" column="board_content"/>
+ 	</resultMap>
+	<!-- select jumpBoard -->
+	<select id="selectJumpBoard" resultMap="jumpBoard">
+		select * from jumpBoard
+	</select> 
+	
+	<!-- checkBest -->
+	<resultMap id="jumpCheck" type="project.jump.dto.JumpCheck">
+ 		<result property="checkBest" column="check_best"/>
+ 	</resultMap>	
+	<!-- select detailBestIdCheck -->
+	<select id="detailBestIdCheck" parameterType="HashMap" resultMap="jumpCheck">
+	select check_best from jumpCheck where board_num = #{boardNum} and jump_id = #{jumpId}
+	</select>
+	
+	<!-- checkSum -->
+	<select id="checkSum" parameterType="int" resultMap="jumpCheck">
+		select * from jumpCheck where board_num = #{boardNum}
+	</select>
+	
+	<!-- jumpCheckInsert -->
+	<insert id="jumpCheckInsert" parameterType="project.jump.dto.JumpCheck">
+		insert into jumpCheck values(#{jumpId},#{boardNum},default)
+	</insert>
+	<!-- CheckUpdate -->
+	<update id="checkUpdate" parameterType="project.jump.dto.JumpCheck">
+		update jumpCheck set check_best = #{checkBest} where jump_id=#{jumpId} and board_num=#{boardNum}
+	</update>
+	
+	<!-- boardNumDesc -->
+	<select id="boardNumDesc" parameterType="String" resultMap="jumpBoard">
+	select board_num  from JUMPBOARD where jump_id = #{jumpId} order by rownum desc
+	</select>
+	
+	<!-- listDAOImpl.findSearch() select -->
+	<select id="findsearch" parameterType="String" resultMap="jumpBoard">
+		select * from jumpBoard where board_title like #{likSearch}
+	</select> 
+	
+    <!-- boardDAOImpl select -->
+	<select id="jumpboardselect" parameterType="int" resultMap="jumpBoard">
+		select * from jumpBoard where board_num = #{boardNum}
+	</select>    
+    <!-- postingDAOImpl insert -->
+    <insert id="jumpBoardInsert" parameterType="project.jump.dto.JumpBoard">
+    	insert into jumpBoard values(#{jumpId},board_num.nextval,default,#{boardTitle},#{boardArea},#{boardContent})
+    </insert>
+ 	<!-- register USER insert -->
+ 	<insert id="registerUser" parameterType="project.jump.dto.Jump">
+ 		insert into jump values(#{jumpId},#{jumpPwd},#{jumpName})
+ 	</insert>
+ 	
+ 	
+ 	<!-- List로 반환 -->
+ 	<!-- <insert id="insertUser"  parameterType="com.myspring.User">
+        INSERT INTO member(
+            no, name, number
+        ) values(
+            #{no}, #{name}, #{number}
+        )
+    </insert> -->
+ 	<!-- 아이디로 패스워드를 읽어오는 쿼리문 -->
+ 	<!-- <select id="getUserPwd" parameterType="java.lang.String" resultType="java.lang.String">
+ 		select jump_pwd from jump where jump_id = #{jumpId}
+ 	</select> -->
+</mapper>
